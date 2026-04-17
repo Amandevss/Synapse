@@ -2,7 +2,9 @@ import express from 'express';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { userModel} from './db.js';
+import { userModel,contentModel} from './db.js';
+
+import { userMiddleware } from './middleware.js';
 
 
 
@@ -65,6 +67,62 @@ app.post("/api/v1/signin", async (req, res) => {
             message : "Invalid credentials"
         })
     }
+});
+
+app.post("/api/v1/content", userMiddleware, async (req, res) => {
+    const title = req.body.title;
+    const link = req.body.link;
+
+
+    try {
+        const created = await contentModel.create({
+            title,
+            link,
+            // @ts-ignore
+            userId : req.userId,
+            tags : []
+        })
+
+        return res.status(201).json({
+            message : "Content added",
+            content: created
+        })
+    } catch (err) {
+        return res.status(500).json({
+            message : "Failed to add content",
+            error : err instanceof Error ? err.message : String(err)
+        })
+    }
+});
+
+app.get("/api/v1/content", userMiddleware, async (req, res) => {
+    try {
+        const content = await contentModel.find({
+            // @ts-ignore
+            userId: req.userId
+        });
+
+        res.json({
+            content
+        });
+    } catch (err) {
+        res.status(500).json({
+            message: "Failed to fetch content"
+        });
+    }
+});
+
+app.delete("/api/v1/content", (req, res) => {
+
+});
+
+app.post("api/v1/brain/share", (req, res) => {
+
+});
+
+app.get("api/v1/brain/:shareLink", (req, res) => {
+
+
 });
 
 
