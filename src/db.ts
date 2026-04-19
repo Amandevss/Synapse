@@ -23,6 +23,8 @@ const contentSchema = new Schema({
     link: { type: String },
     tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    shareLink: { type: String, unique: true, sparse: true },
+    sharedAt: { type: Date }
 })
 
 export const contentModel = model("Content", contentSchema);
