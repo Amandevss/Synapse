@@ -112,16 +112,27 @@ app.get("/api/v1/content", userMiddleware, async (req, res) => {
     }
 });
 
-app.delete("/api/v1/content", (req, res) => {
+app.delete("/api/v1/content", userMiddleware, async (req, res) => {
+    try {
+        const contentId = req.body.contentId;
 
+        await contentModel.findByIdAndDelete(contentId);
+
+        res.json({
+            message: "Content deleted"
+        });
+    } catch (err) {
+        res.status(500).json({
+            message: "Failed to delete content"
+        });
+    }
 });
 
 app.post("api/v1/brain/share", (req, res) => {
-
+     
 });
 
 app.get("api/v1/brain/:shareLink", (req, res) => {
-
 
 });
 
