@@ -230,6 +230,37 @@ app.get("/api/v1/brain/:shareLink", async (req, res) => {
     }
 });
 
+app.post("/api/v1/profile", userMiddleware, async (req, res) => {
+    const { name, email } = req.body;
+    const userId = req.userId;
+
+    if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    try {
+        const user = await userModel.findByIdAndUpdate(
+            userId,
+            { name, email },
+            { new: true }
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.json({
+            message: "Profile updated",
+            user
+        });
+    } catch (err) {
+        res.status(500).json({
+            message: "Failed to update profile"
+        });
+    }
+});
+
+
 app.listen(3000, () => {
     console.log("Server started on port 3000");
 });
